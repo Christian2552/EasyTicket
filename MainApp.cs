@@ -4,31 +4,11 @@
     {
         static void Main()
         {
-            //______________________________________________________________________________
-            // THIS CODE IS FOR TEST PURPOSES
-            // Register User = new Register();
+            Register obj = new Register();
 
-            // User.Authentication_Register();
+            obj.Authentication_Register();
 
-            // List<string> user = User.info_person;
-
-            // foreach (string i in user)
-            // {
-            //     Console.WriteLine(i);
-            // }
-            // ________________________________________________________________________________
-
-
-            Login User = new Login();
-
-            User.Authentication_Login();
-
-            List<string> user = User.info_person;
-
-            foreach (string i in user)
-            {
-                Console.WriteLine(i);
-            }
+            Console.WriteLine($"{obj.firstName} with email: {obj.Email}, he is {obj.Age} years old and password is {obj.Password} and the rep one is {obj.Password == obj.RepPassword}");
         }
     }
 }
