@@ -90,7 +90,9 @@ namespace EasyTicket
                 Thread.Sleep(1000);
                 Console.WriteLine("70%");
                 Complete = true;
-                //First Here we will check for similar user and if there isnt , there will be second statement which will work with DB
+
+                CreateUser createUser = new CreateUser(User_InfoReg!);
+
             }
             else
             {
