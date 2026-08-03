@@ -14,10 +14,10 @@ namespace EasyTicket
                 {
                     connection.Open();
 
-                    // 1. Изчистваме имейла от празните пространства
+                    //delete all spaces from the email to avoid errors
                     string cleanEmail = User.Email?.Trim() ?? "";
 
-                    // 2. ПРОВЕРКА: Проверяваме бройката съвпадения в базата
+
                     string checkQuery = "SELECT COUNT(*) FROM `User` WHERE Email = @Email";
                     bool emailExists = false;
 
@@ -30,9 +30,9 @@ namespace EasyTicket
                         {
                             emailExists = true;
                         }
-                    } // Тук checkCommand се затваря официално!
+                    }
 
-                    // 3. Ако имейлът съществува - спираме тук
+                    // Statement if the email already exists in the database
                     if (emailExists)
                     {
                         Console.WriteLine("Error: This email is already registered!");
@@ -41,7 +41,7 @@ namespace EasyTicket
                         return;
                     }
 
-                    // 4. ЗАПИС: Ако имейлът е свободен, правим INSERT
+
                     string insertQuery = "INSERT INTO `User` (FirstName, LastName, Email, Age, Password) " +
                                          "VALUES (@FirstName, @LastName, @Email, @Age, @Password)";
 
@@ -58,10 +58,10 @@ namespace EasyTicket
 
                     Console.WriteLine("User created successfully!");
                     Console.WriteLine("Press any key to continue...");
-                    Console.ReadKey(); // Задържа екрана, за да потвърдиш успещния запис!
+                    Console.ReadKey();
                 }
             }
-            catch (Exception ex) // Прихваща ВСИЧКИ грешки
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 Console.WriteLine("Press any key to continue...");

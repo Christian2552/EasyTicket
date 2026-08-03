@@ -142,23 +142,39 @@ namespace EasyTicket
 
         public void ErrorCheck_Login()
         {
-            Console.Clear();
-            Console.WriteLine("Press Enter to repeat OR BackSpace to get in the Main Menu");
-            while (true)
-            {
-                ConsoleKey key = Console.ReadKey(intercept: true).Key;
+            ExistsUser existsUser = new ExistsUser(User_InfoLog!);
 
-                if (key == ConsoleKey.Enter)
+            if (existsUser.IsSuccess)
+            {
+                Console.Clear();
+                Console.WriteLine("Login successful! Welcome back!");
+                Complete = true;
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+            else
+            {
+                Complete = false;
+                Console.Clear();
+                Console.WriteLine("Press Enter to repeat OR BackSpace to get in the Main Menu");
+                while (true)
                 {
-                    Complete = false;
-                    break;
-                }
-                else if (key == ConsoleKey.Backspace)
-                {
-                    Complete = true;
-                    break;
+                    ConsoleKey key = Console.ReadKey(intercept: true).Key;
+
+                    if (key == ConsoleKey.Enter)
+                    {
+                        Complete = false;
+                        break;
+                    }
+                    else if (key == ConsoleKey.Backspace)
+                    {
+                        Complete = true;
+                        break;
+                    }
                 }
             }
+
+
         }
         //-----------------------------------------------------------------------LOGIN ZONE
 
