@@ -32,7 +32,7 @@ namespace EasyTicket
                     }
                 }
 
-                // Извеждаме съобщение на потребителя
+
                 if (IsSuccess)
                 {
                     Console.WriteLine("Login successful! Welcome back!");

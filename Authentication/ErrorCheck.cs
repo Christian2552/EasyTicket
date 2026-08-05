@@ -156,6 +156,7 @@ namespace EasyTicket
             {
                 Complete = false;
                 Console.Clear();
+                Console.WriteLine("Invalid email or password!");
                 Console.WriteLine("Press Enter to repeat OR BackSpace to get in the Main Menu");
                 while (true)
                 {
