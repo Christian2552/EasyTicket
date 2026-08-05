@@ -123,9 +123,10 @@
 
                                 if (currentUser.Subscription == 0)
                                 {
-                                    Console.WriteLine("\n*Would you like to become Premium User and make your own events?*");
-                                    Console.WriteLine("Press 1 for Yes");
-                                    Console.WriteLine("Press 2 for No");
+                                    Console.WriteLine("\n*Would you like to become a Premium User and make your own events?*");
+                                    Console.WriteLine("• Press 1 for Yes");
+                                    Console.WriteLine("• Press 2 for No");
+                                    Console.Write("Your choice: ");
 
                                     if (int.TryParse(Console.ReadLine(), out int subChoice) && subChoice == 1)
                                     {
@@ -138,10 +139,22 @@
                                         Console.WriteLine("\nYou chose not to upgrade.");
                                     }
                                 }
+                                // Logic for Premium Users
+                                else
+                                {
+                                    Console.WriteLine("\n• Press 1 to Create a New Event");
+                                    Console.WriteLine("• Press 2 to Back");
+                                    Console.Write("Your choice: ");
+
+                                    if (Console.ReadLine() == "1")
+                                    {
+                                        CreateEvent.AddNewEvent(currentUser.Id);
+                                    }
+                                }
                             }
-                            else
+                            else // Logic for Guest Users
                             {
-                                Console.WriteLine("Guest user has no profile details. Please register!");
+                                Console.WriteLine("Guest user has no profile details. Please register or log in!");
                             }
 
                             Console.WriteLine("\nPress Enter to return to main menu...");
@@ -149,7 +162,8 @@
                             break;
 
                         case 2:
-                            Console.WriteLine("\n[Events list view goes here]");
+                            EventCatalog.DisplayAndSelectEvent(currentUser);
+                            Console.WriteLine("\nPress Enter to return to main menu...");
                             Console.ReadLine();
                             break;
 
