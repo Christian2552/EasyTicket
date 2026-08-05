@@ -1,348 +1,183 @@
-﻿using Microsoft.VisualBasic;
-
-namespace EasyTicket
+﻿namespace EasyTicket
 {
     class MainClass
     {
-        public static int Num;
-
         public static UserData? currentUser;
-        public static bool isAuthenticated = false;
 
         static void Main()
         {
+            bool appRunning = true;
 
-            while (true)
+            while (appRunning)
             {
-                Console.Clear();
-                Console.WriteLine("=============================");
-                Console.WriteLine("      EASY TICKET MENU       ");
-                Console.WriteLine("=============================");
-                Console.WriteLine("• Press 1 for Register");
-                Console.WriteLine("• Press 2 for Login");
-                Console.WriteLine("• Press 3 to continue as Guest");
-                Console.WriteLine("• Press 4 to Exit");
-                Console.WriteLine("");
-                Console.Write("Your num: ");
+                bool isAuthenticated = false;
 
-                while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 4)
+                while (!isAuthenticated)
                 {
-                    Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
-                    Console.Write("User number: ");
-                }
+                    Console.Clear();
+                    Console.WriteLine("=============================");
+                    Console.WriteLine("       EASY TICKET MENU      ");
+                    Console.WriteLine("=============================");
+                    Console.WriteLine("• Press 1 for Register");
+                    Console.WriteLine("• Press 2 for Login");
+                    Console.WriteLine("• Press 3 to continue as Guest");
+                    Console.WriteLine("• Press 4 to Exit Application\n");
+                    Console.Write("Your num: ");
 
-                switch (Num)
-                {
-                    case 1:
-                        {
+                    if (!int.TryParse(Console.ReadLine(), out int menuChoice) || menuChoice < 1 || menuChoice > 4)
+                    {
+                        Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
+                        Console.ReadKey();
+                        continue;
+                    }
+
+                    switch (menuChoice)
+                    {
+                        case 1:
                             Register userRegister = new Register();
                             bool complete = false;
-
                             do
                             {
                                 Console.Clear();
-                                Console.WriteLine("Register:");
-                                Console.WriteLine("---------");
-
+                                Console.WriteLine("Register:\n---------");
                                 userRegister.Authentication_Register();
                                 AuthenticationCheck infoCheck = new AuthenticationCheck(userRegister);
                                 infoCheck.ErrorCheck_Register();
                                 complete = infoCheck.Complete;
-
                             } while (!complete);
 
                             CreateUser dbSave = new CreateUser(userRegister);
-
                             currentUser = UserData.GetUserByEmail(userRegister.Email ?? "");
                             isAuthenticated = true;
-
-                            bool inMainMenu = true;
-                            while (inMainMenu)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("       EASY TICKET APP       ");
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("• Press 1 for User Management");
-                                Console.WriteLine("• Press 2 for Check Events");
-                                Console.WriteLine("• Press 3 to Exit");
-                                Console.WriteLine("");
-                                Console.Write("Your num: ");
-
-                                while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 3)
-                                {
-                                    Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
-                                    Console.Write("User number: ");
-                                }
-
-                                switch (Num)
-                                {
-                                    case 1:
-                                        {
-                                            Console.Clear();
-                                            Console.WriteLine("User Management:");
-                                            Console.WriteLine("----------------");
-
-                                            if (currentUser != null)
-                                            {
-                                                Console.WriteLine($"Welcome, {currentUser.FirstName} {currentUser.LastName}!");
-                                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}");
-
-                                                if (currentUser.Subscription == 0)
-                                                {
-                                                    Console.WriteLine("\n*Would you like to become Premium User and make your own events?*");
-                                                    Console.WriteLine("Press 1 for Yes");
-                                                    Console.WriteLine("Press 2 for No");
-
-                                                    while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 2)
-                                                    {
-                                                        Console.WriteLine("INVALID NUMBER!");
-                                                    }
-
-                                                    if (Num == 1)
-                                                    {
-
-                                                        if (currentUser != null)
-                                                        {
-                                                            currentUser.Subscription = 1;
-                                                            UpdateSub.UpdateSubscription(currentUser.Id, 1); // Change the subscription in the database
-                                                        }
-                                                        Console.WriteLine("\nSuccess! You are now a Premium User!");
-                                                    }
-
-                                                    else
-                                                    {
-                                                        Console.WriteLine("\nYou chose not to upgrade.");
-                                                    }
-                                                }
-
-                                            }
-
-
-                                            Console.WriteLine("\nPress Enter to return to main menu...");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            Console.WriteLine("\n[Events list view goes here]");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            inMainMenu = false;
-                                            Console.WriteLine("Goodbye!");
-                                            break;
-                                        }
-                                }
-                            }
-
-
                             break;
-                        }
-                    case 2:
-                        {
+
+                        case 2:
                             Login userLogin = new Login();
                             bool completeLog = false;
-
                             do
                             {
                                 Console.Clear();
-                                Console.WriteLine("Login:");
-                                Console.WriteLine("------");
-
+                                Console.WriteLine("Login:\n------");
                                 userLogin.Authentication_Login();
-
                                 AuthenticationCheck infoCheck1 = new AuthenticationCheck(userLogin);
                                 infoCheck1.ErrorCheck_Login();
-
                                 ExistsUser existsCheck = new ExistsUser(userLogin);
 
                                 completeLog = infoCheck1.Complete && existsCheck.IsSuccess;
-
                             } while (!completeLog);
 
                             currentUser = UserData.GetUserByEmail(userLogin.Email ?? "");
                             isAuthenticated = true;
-
-                            bool inMainMenu = true;
-                            while (inMainMenu)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("       EASY TICKET APP       ");
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("• Press 1 for User Management");
-                                Console.WriteLine("• Press 2 for Check Events");
-                                Console.WriteLine("• Press 3 to Exit");
-                                Console.WriteLine("");
-                                Console.Write("Your num: ");
-
-                                while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 3)
-                                {
-                                    Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
-                                    Console.Write("User number: ");
-                                }
-
-                                switch (Num)
-                                {
-                                    case 1:
-                                        {
-                                            Console.Clear();
-                                            Console.WriteLine("User Management:");
-                                            Console.WriteLine("----------------");
-
-                                            if (currentUser != null)
-                                            {
-                                                Console.WriteLine($"Welcome, {currentUser.FirstName} {currentUser.LastName}!");
-                                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}");
-
-                                                if (currentUser.Subscription == 0)
-                                                {
-                                                    Console.WriteLine("\n*Would you like to become Premium User and make your own events?*");
-                                                    Console.WriteLine("Press 1 for Yes");
-                                                    Console.WriteLine("Press 2 for No");
-
-                                                    while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 2)
-                                                    {
-                                                        Console.WriteLine("INVALID NUMBER!");
-                                                    }
-
-                                                    if (Num == 1)
-                                                    {
-
-                                                        if (currentUser != null)
-                                                        {
-                                                            currentUser.Subscription = 1;
-                                                            UpdateSub.UpdateSubscription(currentUser.Id, 1); // Change the subscription in the database
-                                                        }
-                                                        Console.WriteLine("\nSuccess! You are now a Premium User!");
-                                                    }
-
-                                                    else
-                                                    {
-                                                        Console.WriteLine("\nYou chose not to upgrade.");
-                                                    }
-                                                }
-
-                                            }
-
-
-                                            Console.WriteLine("\nPress Enter to return to main menu...");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            Console.WriteLine("\n[Events list view goes here]");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            inMainMenu = false;
-                                            Console.WriteLine("Goodbye!");
-                                            break;
-                                        }
-                                }
-                            }
-
                             break;
-                        }
-                    case 3:
-                        {
+
+                        case 3:
                             currentUser = null;
                             isAuthenticated = true;
+                            break;
 
-                            bool inMainMenu = true;
-                            while (inMainMenu)
+                        case 4:
+                            Console.Clear();
+                            Console.WriteLine("Exiting the application. Goodbye!");
+                            Console.WriteLine("");
+                            return;
+                    }
+                }
+
+                bool inMainMenu = true;
+                while (inMainMenu)
+                {
+                    Console.Clear();
+                    Console.WriteLine("=============================");
+                    Console.WriteLine("       EASY TICKET APP       ");
+                    Console.WriteLine("=============================");
+                    Console.WriteLine("• Press 1 for User Management");
+                    Console.WriteLine("• Press 2 for Check Events");
+                    if (currentUser != null)
+                    {
+                        Console.WriteLine("• Press 3 to Log Out");
+                    }
+                    else
+                    {
+                        Console.WriteLine("• Press 3 to Register / Login");
+                    }
+                    Console.WriteLine("• Press 4 to Exit Application\n");
+                    Console.Write("Your num: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out int appChoice) || appChoice < 1 || appChoice > 4)
+                    {
+                        Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
+                        Console.ReadKey();
+                        continue;
+                    }
+
+                    switch (appChoice)
+                    {
+                        case 1:
+                            Console.Clear();
+                            Console.WriteLine("User Management:\n----------------");
+
+                            if (currentUser != null)
                             {
-                                Console.Clear();
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("       EASY TICKET APP       ");
-                                Console.WriteLine("=============================");
-                                Console.WriteLine("• Press 1 for User Management");
-                                Console.WriteLine("• Press 2 for Check Events");
-                                Console.WriteLine("• Press 3 to Exit");
-                                Console.WriteLine("");
-                                Console.Write("Your num: ");
+                                Console.WriteLine($"Welcome, {currentUser.FirstName} {currentUser.LastName}!");
+                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}");
 
-                                while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 3)
+                                if (currentUser.Subscription == 0)
                                 {
-                                    Console.WriteLine("INVALID, PLEASE INSERT VALID NUMBER!!!");
-                                    Console.Write("User number: ");
-                                }
+                                    Console.WriteLine("\n*Would you like to become Premium User and make your own events?*");
+                                    Console.WriteLine("Press 1 for Yes");
+                                    Console.WriteLine("Press 2 for No");
 
-                                switch (Num)
-                                {
-                                    case 1:
-                                        {
-                                            Console.Clear();
-                                            Console.WriteLine("User Management:");
-                                            Console.WriteLine("----------------");
-
-                                            if (currentUser != null)
-                                            {
-                                                Console.WriteLine($"Welcome, {currentUser.FirstName} {currentUser.LastName}!");
-                                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}");
-
-                                                if (currentUser.Subscription == 0)
-                                                {
-                                                    Console.WriteLine("\n*Would you like to become Premium User and make your own events?*");
-                                                    Console.WriteLine("Press 1 for Yes");
-                                                    Console.WriteLine("Press 2 for No");
-
-                                                    while (!int.TryParse(Console.ReadLine(), out Num) || Num < 1 || Num > 2)
-                                                    {
-                                                        Console.WriteLine("INVALID NUMBER!");
-                                                    }
-
-                                                    if (Num == 1)
-                                                    {
-
-                                                        if (currentUser != null)
-                                                        {
-                                                            currentUser.Subscription = 1;
-                                                            UpdateSub.UpdateSubscription(currentUser.Id, 1); // Change the subscription in the database
-                                                        }
-                                                        Console.WriteLine("\nSuccess! You are now a Premium User!");
-                                                    }
-
-                                                    else
-                                                    {
-                                                        Console.WriteLine("\nYou chose not to upgrade.");
-                                                    }
-                                                }
-
-                                            }
-
-
-                                            Console.WriteLine("\nPress Enter to return to main menu...");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            Console.WriteLine("\n[Events list view goes here]");
-                                            Console.ReadLine();
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            inMainMenu = false;
-                                            Console.WriteLine("Goodbye!");
-                                            break;
-                                        }
+                                    if (int.TryParse(Console.ReadLine(), out int subChoice) && subChoice == 1)
+                                    {
+                                        currentUser.Subscription = 1;
+                                        UpdateSub.UpdateSubscription(currentUser.Id, 1);
+                                        Console.WriteLine("\nSuccess! You are now a Premium User!");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nYou chose not to upgrade.");
+                                    }
                                 }
                             }
+                            else
+                            {
+                                Console.WriteLine("Guest user has no profile details. Please register!");
+                            }
 
-
+                            Console.WriteLine("\nPress Enter to return to main menu...");
+                            Console.ReadLine();
                             break;
-                        }
+
+                        case 2:
+                            Console.WriteLine("\n[Events list view goes here]");
+                            Console.ReadLine();
+                            break;
+
+                        case 3:
+                            inMainMenu = false;
+
+                            if (currentUser != null)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Logging out...\n");
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Redirecting to Register/Login...\n");
+                            }
+                            Console.WriteLine("Press any key to continue...");
+                            Console.ReadKey();
+                            break;
+
+                        case 4:
+                            Console.Clear();
+                            Console.WriteLine("Exiting the application. Goodbye!");
+                            Console.WriteLine("");
+                            return;
+                    }
                 }
             }
         }
-
     }
 }
