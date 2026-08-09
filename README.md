@@ -9,7 +9,7 @@ EasyTicket
 - **Ticket Booking & Cancellations:** Book tickets with automatic DB updates, or cancel them to free up seats for others.
 - **Organizer Dashboard:** Premium users can create new events or delete their own (only if no other attendees have booked yet).
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Language:** C# (.NET 9)
 - **Database:** MySQL
