@@ -119,40 +119,60 @@
                             if (currentUser != null)
                             {
                                 Console.WriteLine($"Welcome, {currentUser.FirstName} {currentUser.LastName}!");
-                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}");
+                                Console.WriteLine($"Current Status: {(currentUser.Subscription == 1 ? "Premium" : "Standard")}\n");
+
+                                Console.WriteLine("• Press 1 to View My Purchased Tickets");
 
                                 if (currentUser.Subscription == 0)
                                 {
-                                    Console.WriteLine("\n*Would you like to become a Premium User and make your own events?*");
-                                    Console.WriteLine("• Press 1 for Yes");
-                                    Console.WriteLine("• Press 2 for No");
-                                    Console.Write("Your choice: ");
-
-                                    if (int.TryParse(Console.ReadLine(), out int subChoice) && subChoice == 1)
-                                    {
-                                        currentUser.Subscription = 1;
-                                        UpdateSub.UpdateSubscription(currentUser.Id, 1);
-                                        Console.WriteLine("\nSuccess! You are now a Premium User!");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("\nYou chose not to upgrade.");
-                                    }
+                                    Console.WriteLine("• Press 2 to Upgrade to Premium");
+                                    Console.WriteLine("• Press 3 to Back");
                                 }
-                                // Logic for Premium Users
                                 else
                                 {
-                                    Console.WriteLine("\n• Press 1 to Create a New Event");
-                                    Console.WriteLine("• Press 2 to Back");
-                                    Console.Write("Your choice: ");
+                                    Console.WriteLine("• Press 2 to Create a New Event");
+                                    Console.WriteLine("• Press 3 to Manage / Delete My Created Events");
+                                    Console.WriteLine("• Press 4 to Back");
+                                }
 
-                                    if (Console.ReadLine() == "1")
-                                    {
-                                        CreateEvent.AddNewEvent(currentUser.Id);
-                                    }
+                                Console.Write("\nYour choice: ");
+                                string choice = Console.ReadLine() ?? "";
+
+                                switch (choice)
+                                {
+                                    case "1":
+                                        TicketHistory.DisplayUserTickets(currentUser.Id);
+                                        break;
+
+                                    case "2":
+                                        if (currentUser.Subscription == 0)
+                                        {
+                                            currentUser.Subscription = 1;
+                                            UpdateSub.UpdateSubscription(currentUser.Id, 1);
+                                            Console.WriteLine("\nSuccess! You are now a Premium User!");
+                                        }
+                                        else
+                                        {
+                                            CreateEvent.AddNewEvent(currentUser.Id);
+                                        }
+                                        break;
+
+                                    case "3":
+                                        if (currentUser.Subscription == 1)
+                                        {
+                                            ManageEvents.DisplayMyCreatedEvents(currentUser.Id);
+                                        }
+                                        break;
+
+                                    case "4":
+                                        break;
+
+                                    default:
+                                        Console.WriteLine("\nInvalid option!");
+                                        break;
                                 }
                             }
-                            else // Logic for Guest Users
+                            else
                             {
                                 Console.WriteLine("Guest user has no profile details. Please register or log in!");
                             }

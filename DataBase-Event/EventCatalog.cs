@@ -124,29 +124,67 @@ namespace EasyTicket
 
             if (Console.ReadLine() == "1")
             {
-                if (BookTicket(selectedEvent.EventId))
+                if (BookTicket(selectedEvent.EventId, currentUser.Id))
                 {
-                    Console.WriteLine("\n* Success! You have booked a ticket for this event. *");
+                    Console.WriteLine("\n Success! You have booked a ticket for this event.");
                 }
                 else
                 {
-                    Console.WriteLine("* \n❌ Booking failed. Please try again. *");
+                    Console.WriteLine("\n Booking failed. Please try again.");
                 }
             }
         }
 
-        private static bool BookTicket(int eventId)
+        private static bool BookTicket(int eventId, int userId)
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "UPDATE Event SET CurrentGuests = CurrentGuests + 1 WHERE EventId = @EventId AND CurrentGuests < MaxGuests";
 
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                // Транзакция: ако една от двете операции се счупи, базата връща първоначалното състояние
+                using (MySqlTransaction transaction = conn.BeginTransaction())
                 {
-                    cmd.Parameters.AddWithValue("@EventId", eventId);
-                    int affectedRows = cmd.ExecuteNonQuery();
-                    return affectedRows > 0;
+                    try
+                    {
+                        // 1. Увеличаваме броя гости в събитието
+                        string updateQuery = @"
+                    UPDATE Event 
+                    SET CurrentGuests = CurrentGuests + 1 
+                    WHERE EventId = @EventId AND CurrentGuests < MaxGuests";
+
+                        using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn, transaction))
+                        {
+                            updateCmd.Parameters.AddWithValue("@EventId", eventId);
+                            int rows = updateCmd.ExecuteNonQuery();
+
+                            if (rows == 0)
+                            {
+                                transaction.Rollback();
+                                return false; // Няма свободни места
+                            }
+                        }
+
+                        // 2. Записваме купения билет в таблицата Ticket
+                        string insertTicketQuery = @"
+                    INSERT INTO Ticket (UserId, EventId, PurchaseDate) 
+                    VALUES (@UserId, @EventId, @PurchaseDate)";
+
+                        using (MySqlCommand insertCmd = new MySqlCommand(insertTicketQuery, conn, transaction))
+                        {
+                            insertCmd.Parameters.AddWithValue("@UserId", userId);
+                            insertCmd.Parameters.AddWithValue("@EventId", eventId);
+                            insertCmd.Parameters.AddWithValue("@PurchaseDate", DateTime.Now);
+                            insertCmd.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
                 }
             }
         }
